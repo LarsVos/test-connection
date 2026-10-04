@@ -1,0 +1,705 @@
+<!doctype html>
+<html lang="nl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"></head><body>
+<title>Spreekcoach Hypotheekadvies</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..100,500..800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap">
+<style>
+/* Layout: één smalle kolom met genummerde spreekblokken, telefoon eerst; koper wijst naar wat er op de slide staat */
+:root{
+  --bg:#F2F4F7; --surface:#FFFFFF; --sunk:#E6EBF1; --ink:#14233A; --muted:#566578; --line:#D5DCE6;
+  --navy:#1F3A5F; --on-navy:#FFFFFF; --copper:#A85F1C; --copper-soft:#F7E9DB;
+  --good:#2C7A4B; --good-soft:#E2F1E8; --bad:#B03A3A; --bad-soft:#F8E4E4;
+  --warn:#7A4E00; --warn-soft:#FFF3DA; --warn-line:#EBCB8B;
+  --shadow:0 1px 2px rgba(20,35,58,.10);
+  --f-display:"Archivo","Arial Narrow",system-ui,sans-serif;
+  --f-body:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --r:10px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0E1622; --surface:#162133; --sunk:#1E2C42; --ink:#E5EBF3; --muted:#9DABBD; --line:#2B3B54;
+    --navy:#9DBDE6; --on-navy:#0E1622; --copper:#E6A266; --copper-soft:#3A2818;
+    --good:#6BC793; --good-soft:#163323; --bad:#EE8A8A; --bad-soft:#3B1D1D;
+    --warn:#F2C76B; --warn-soft:#30250F; --warn-line:#5E4818;
+    --shadow:0 1px 2px rgba(0,0,0,.4);
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0E1622; --surface:#162133; --sunk:#1E2C42; --ink:#E5EBF3; --muted:#9DABBD; --line:#2B3B54;
+  --navy:#9DBDE6; --on-navy:#0E1622; --copper:#E6A266; --copper-soft:#3A2818;
+  --good:#6BC793; --good-soft:#163323; --bad:#EE8A8A; --bad-soft:#3B1D1D;
+  --warn:#F2C76B; --warn-soft:#30250F; --warn-line:#5E4818;
+  --shadow:0 1px 2px rgba(0,0,0,.4);
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.5;margin:0}
+.wrap{max-width:46rem;margin:0 auto;padding-inline:16px;padding-block:18px 56px}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--copper);outline-offset:2px}
+h1,h2,h3{text-wrap:balance}
+
+/* Kop */
+.top{display:grid;gap:12px;margin-bottom:6px}
+.brand{display:flex;align-items:baseline;justify-content:space-between;gap:4px 12px;flex-wrap:wrap}
+.brand h1{font-family:var(--f-display);font-stretch:82%;font-weight:780;font-size:1.65rem;letter-spacing:-.01em;margin:0;color:var(--navy);line-height:1.1}
+.eyebrow{font-size:.72rem;text-transform:uppercase;letter-spacing:.09em;color:var(--copper);font-weight:700}
+.slides{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.slides button{text-align:left;padding:10px 12px;border:1.5px solid var(--line);background:var(--surface);border-radius:var(--r);cursor:pointer;display:grid;gap:1px;min-width:0}
+.slides .t{font-family:var(--f-display);font-weight:750;font-size:1.12rem;font-stretch:88%}
+.slides .s{font-size:.78rem;color:var(--muted);line-height:1.3}
+.slides button[aria-selected="true"]{background:var(--navy);border-color:var(--navy);color:var(--on-navy)}
+.slides button[aria-selected="true"] .s{color:inherit;opacity:.85}
+.modes{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));background:var(--sunk);border-radius:var(--r);padding:4px;gap:4px}
+.modes button{border:0;background:transparent;color:var(--muted);font-weight:700;font-size:.9rem;padding:9px 2px;border-radius:7px;cursor:pointer}
+.modes button[aria-selected="true"]{background:var(--surface);color:var(--ink);box-shadow:var(--shadow)}
+
+/* Algemeen */
+.lede{margin:14px 0 0;color:var(--muted);max-width:62ch}
+.btn{font-weight:700;border-radius:var(--r);padding:11px 18px;border:1.5px solid var(--navy);cursor:pointer;min-height:46px;background:transparent;color:var(--navy)}
+.btn.primary{background:var(--navy);color:var(--on-navy)}
+.btn.good{background:var(--good);border-color:var(--good);color:var(--on-navy)}
+.btn.bad{border-color:var(--bad);color:var(--bad);background:var(--surface)}
+.btn.small{min-height:36px;padding:6px 12px;font-size:.88rem}
+.btn:disabled{opacity:.45;cursor:default}
+.linkbtn{background:none;border:0;color:var(--muted);text-decoration:underline;cursor:pointer;padding:6px;font-size:.9rem}
+.row-btns{display:flex;flex-wrap:wrap;gap:8px}
+.n{color:var(--copper);font-weight:700;font-variant-numeric:tabular-nums}
+
+details.plan,details.slidepic{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:10px 14px;margin-top:12px}
+details summary{cursor:pointer;font-weight:700;color:var(--navy)}
+details.plan ol{margin:10px 0 4px;padding-left:1.3em;display:grid;gap:6px}
+details.slidepic img{display:block;margin-top:10px;border-radius:6px;border:1px solid var(--line);width:100%;height:auto}
+
+/* Waarschuwing */
+.warn{background:var(--warn-soft);border:1px solid var(--warn-line);border-radius:var(--r);padding:12px 14px;margin-top:12px;display:grid;gap:8px}
+.warn h2{margin:0;font-family:var(--f-display);font-stretch:88%;font-size:1.05rem;color:var(--warn)}
+.warn p{margin:0;font-size:.92rem}
+.tbl-wrap{overflow-x:auto}
+.warn table{border-collapse:collapse;font-size:.88rem;width:100%;min-width:300px}
+.warn th,.warn td{text-align:left;padding:5px 8px 5px 0;border-bottom:1px solid var(--warn-line);vertical-align:top}
+.warn th{font-size:.75rem;text-transform:uppercase;letter-spacing:.06em;color:var(--warn)}
+.warn .old{text-decoration:line-through;text-decoration-color:var(--bad)}
+
+/* Niveaubalk */
+.levels{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);padding-block:12px 10px;display:grid;gap:6px}
+.levels .lab{font-size:.78rem;color:var(--muted);display:flex;justify-content:space-between;gap:8px}
+.levels .row{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px}
+.levels button{display:grid;align-content:start;gap:1px;justify-items:center;padding:6px 2px 7px;border:1.5px solid var(--line);background:var(--surface);color:var(--muted);border-radius:8px;font-size:.7rem;font-weight:700;cursor:pointer;line-height:1.15;text-align:center;hyphens:manual}
+.levels button b{font-family:var(--f-display);font-size:1rem;color:var(--ink)}
+.levels button[aria-pressed="true"]{border-color:var(--navy);background:var(--navy);color:var(--on-navy)}
+.levels button[aria-pressed="true"] b{color:inherit}
+
+/* Blokken */
+.blocks{list-style:none;margin:4px 0 0;padding:0;display:grid;gap:10px}
+.block{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:12px 14px 14px;cursor:pointer;display:grid;gap:6px}
+.block.rev{border-color:var(--copper);box-shadow:inset 3px 0 0 var(--copper)}
+.bhead{display:flex;align-items:center;gap:10px}
+.num{flex:none;width:28px;height:28px;border-radius:50%;background:var(--navy);color:var(--on-navy);display:grid;place-items:center;font-family:var(--f-display);font-weight:750;font-size:.88rem}
+.bhead h3{margin:0;font-family:var(--f-display);font-stretch:88%;font-size:1.08rem;font-weight:720;flex:1;min-width:0}
+.secs{flex:none;font-size:.75rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.peek{flex:none;border:1.5px solid var(--line);background:var(--surface);border-radius:999px;padding:3px 10px;font-size:.78rem;font-weight:700;color:var(--muted);cursor:pointer}
+.block.rev .peek{border-color:var(--copper);color:var(--copper)}
+.point{margin:0;font-size:.82rem;color:var(--copper);font-weight:700;line-height:1.35}
+.point span{color:var(--muted);text-transform:uppercase;letter-spacing:.07em;font-size:.68rem;margin-right:4px}
+.btext{min-width:0}
+.btext p{margin:0;font-size:1.06rem;line-height:1.65;max-width:65ch}
+.btext .fl{font-weight:700;letter-spacing:.04em;word-spacing:.2em;color:var(--ink)}
+.blank{display:inline-block;vertical-align:-.15em;min-width:calc(var(--len) * .55em + .9em);height:1.4em;border:0;border-bottom:2px dashed var(--copper);background:var(--copper-soft);border-radius:4px 4px 0 0;font-weight:700;color:var(--copper);padding:0 .3em;cursor:pointer;line-height:1.4em;margin:0 1px;letter-spacing:0;font-variant-numeric:tabular-nums}
+.blank.shown{border-bottom-style:solid}
+.keys{margin:0;padding-left:1.15em;display:grid;gap:3px;font-size:1rem}
+.quiet{margin:0;color:var(--muted);font-style:italic;font-size:.95rem}
+.slidenote{margin:0;font-size:.82rem;color:var(--warn);background:var(--warn-soft);border-radius:6px;padding:4px 8px;justify-self:start}
+.total{margin:16px 0 0;font-size:.85rem;color:var(--muted)}
+
+/* Kaartjes */
+.deckbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:14px}
+.deckbar .count{font-weight:700;font-variant-numeric:tabular-nums}
+.meter{flex:1 1 120px;height:8px;border-radius:99px;background:var(--sunk);overflow:hidden;min-width:100px}
+.meter i{display:block;height:100%;background:var(--good);border-radius:99px;transition:width .25s}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:20px 18px;margin-top:12px;display:grid;gap:14px;box-shadow:var(--shadow)}
+.card .from{font-size:.75rem;text-transform:uppercase;letter-spacing:.08em;color:var(--copper);font-weight:700;margin:0}
+.card .q{font-family:var(--f-display);font-stretch:90%;font-weight:700;font-size:1.35rem;line-height:1.25;margin:0}
+.card .a{border-top:1px dashed var(--line);padding-top:12px;font-size:1.12rem;line-height:1.55}
+.card .grade{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.tip{color:var(--muted);font-size:.88rem;margin:12px 0 0}
+.done{background:var(--good-soft);border-radius:14px;padding:18px;margin-top:12px;display:grid;gap:10px}
+.done h2{margin:0;font-family:var(--f-display);font-stretch:88%;color:var(--good)}
+.done p{margin:0}
+.done ul{margin:0;padding-left:1.2em;display:grid;gap:4px}
+
+/* Volgorde */
+.placed{list-style:none;padding:0;margin:14px 0 0;display:grid;gap:6px}
+.placed li{display:flex;gap:10px;align-items:center;background:var(--good-soft);border-radius:8px;padding:8px 12px;font-weight:700}
+.placed .num{background:var(--good);width:24px;height:24px;font-size:.8rem}
+.pool{display:grid;gap:6px;margin-top:12px}
+.pool button{text-align:left;padding:11px 14px;border:1.5px solid var(--line);background:var(--surface);border-radius:8px;cursor:pointer;font-weight:700}
+.status{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:12px;flex-wrap:wrap;font-size:.92rem;color:var(--muted)}
+@keyframes shake{0%,100%{transform:none}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.shake{animation:shake .22s 2;border-color:var(--bad)!important;background:var(--bad-soft)!important}
+
+/* Generale */
+.reh{margin-top:14px;display:grid;gap:12px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px;display:grid;gap:12px}
+.panel h2{margin:0;font-family:var(--f-display);font-stretch:88%;font-size:1.3rem}
+.panel p{margin:0}
+.stats{display:flex;gap:18px;flex-wrap:wrap;font-size:.9rem;color:var(--muted)}
+.stats b{display:block;font-family:var(--f-display);font-size:1.3rem;color:var(--ink);font-variant-numeric:tabular-nums}
+.check{display:flex;gap:10px;align-items:flex-start;font-size:.95rem;cursor:pointer}
+.check input{width:20px;height:20px;margin:2px 0 0;accent-color:var(--navy);flex:none}
+.clock{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
+.timer{font-family:var(--f-display);font-weight:750;font-size:3.2rem;line-height:1;font-variant-numeric:tabular-nums;color:var(--navy)}
+.timer.over{color:var(--bad)}
+.goal{color:var(--muted);font-size:.9rem}
+.track{height:8px;border-radius:99px;background:var(--sunk);overflow:hidden}
+.track i{display:block;height:100%;width:0;background:var(--navy);border-radius:99px}
+.track i.over{background:var(--bad)}
+.step{margin:0;color:var(--muted);font-size:.88rem;font-variant-numeric:tabular-nums}
+.cur{margin:0;font-family:var(--f-display);font-stretch:88%;font-size:1.6rem;line-height:1.15}
+.hintbox{min-height:3rem}
+.hintbox p{margin:0;font-size:1.05rem;line-height:1.6}
+.controls{display:grid;grid-template-columns:1fr 1.6fr;gap:8px}
+.controls .btn{min-height:56px}
+.kbd{font-size:.78rem;color:var(--muted);margin:0}
+.big{font-family:var(--f-display);font-weight:780;font-size:3rem;line-height:1;font-variant-numeric:tabular-nums;margin:0}
+.verdict{display:inline-block;font-weight:700;padding:3px 10px;border-radius:99px;font-size:.9rem}
+.verdict.good{background:var(--good-soft);color:var(--good)}
+.verdict.bad{background:var(--bad-soft);color:var(--bad)}
+.times{border-collapse:collapse;width:100%;font-size:.9rem;min-width:320px}
+.times th,.times td{padding:6px 8px 6px 0;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+.times th{font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.times td.t{font-variant-numeric:tabular-nums;white-space:nowrap}
+.times .slow{color:var(--bad);font-weight:700}
+.times .hint{color:var(--copper);font-weight:700}
+
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <h1>Spreekcoach</h1>
+      <span class="eyebrow">Hypotheekadvies · presentatie</span>
+    </div>
+    <div class="slides" role="tablist" aria-label="Kies slide">
+      <button type="button" role="tab" data-act="slide" data-slide="s3" id="tab-s3"><span class="t">Slide 3</span><span class="s">Hypotheek · 5 min · spreker 2</span></button>
+      <button type="button" role="tab" data-act="slide" data-slide="s5" id="tab-s5"><span class="t">Slide 5</span><span class="s">Verzekeringen · 2,5 min · spreker 4</span></button>
+    </div>
+    <nav class="modes" role="tablist" aria-label="Oefenvorm">
+      <button type="button" role="tab" data-act="mode" data-mode="leren" id="mode-leren">Leren</button>
+      <button type="button" role="tab" data-act="mode" data-mode="getallen" id="mode-getallen">Getallen</button>
+      <button type="button" role="tab" data-act="mode" data-mode="volgorde" id="mode-volgorde">Volgorde</button>
+      <button type="button" role="tab" data-act="mode" data-mode="generale" id="mode-generale">Generale</button>
+    </nav>
+  </header>
+  <main id="view" aria-live="polite"></main>
+</div>
+
+<script>
+(function(){
+'use strict';
+
+/* ---------- Inhoud ---------- */
+const DATA = {
+  s3: {
+    id:'s3', nr:3, img:'slide3.jpg', target:300,
+    name:'Hypotheekconstructie, vermogensopstelling en fiscaliteit',
+    blocks:[
+      { title:'Opening: wat kost het huis', wijs:'taartdiagram links, “Totale investering € 823.590”',
+        keys:['Belangrijkste onderdeel: uw hypotheek','Links: hoe de woning betaald wordt','Totaal 823.590 euro, alle kosten erbij','2% overdrachtsbelasting','Geen startersvrijstelling: allebei ouder dan 35'],
+        text:'Dan het belangrijkste onderdeel: uw hypotheek. Links ziet u hoe uw nieuwe woning wordt betaald. Met alle kosten erbij kost de woning 823.590 euro. Daar hoort 2% overdrachtsbelasting bij. De startersvrijstelling geldt voor u niet, omdat u allebei ouder bent dan 35.' },
+      { title:'Overwaarde, eigen geld, lenen', wijs:'taart: donkerblauw 47% en oranje 12%',
+        keys:['Overwaarde 384.500 euro = eigenwoningreserve','Spaargeld 100.000 euro (kan 125.000)','Bewust minder: buffer 50.000 euro voor als Thomas gaat ondernemen','De rest lenen: 339.090 euro'],
+        text:'Na de verkoop van uw huidige woning houdt u naar verwachting 384.500 euro over. Dat is uw overwaarde, of in fiscale termen uw eigenwoningreserve. Daarnaast brengt u 100.000 euro spaargeld in. U zou 125.000 euro kunnen inbrengen, maar wij adviseren bewust 100.000. Zo houdt u een buffer van 50.000 euro over, en die heeft u nodig als Thomas gaat ondernemen. De rest leent u: 339.090 euro.' },
+      { title:'Leningdeel 1: meenemen', wijs:'tabel rechts, rij 1',
+        keys:['Hypotheek in twee delen','Leningdeel 1: 135.000 euro, meenemen','2% rente, vast tot 2041','Nieuwe lening nu ongeveer 4,4%','Besparing ongeveer 3.240 euro rente per jaar'],
+        text:'Die hypotheek splitsen we in twee delen. Leningdeel 1 is 135.000 euro. Dat neemt u mee van uw huidige hypotheek, met de lage rente van 2% die nog vaststaat tot 2041. Een nieuwe lening kost nu ongeveer 4,4%. Door de lage rente mee te nemen, bespaart u in het begin ongeveer 3.240 euro rente per jaar.' },
+      { title:'Leningdeel 2: nieuw', wijs:'tabel rechts, rij 2',
+        keys:['Leningdeel 2: 204.090 euro, nieuw','Ongeveer 4,4% rente, 10 jaar vast','10 jaar is goedkoper dan 20 jaar, toch lang zekerheid'],
+        text:'Leningdeel 2 is 204.090 euro. Dat is een nieuwe lening met ongeveer 4,4% rente, 10 jaar vast. Tien jaar vast is nu goedkoper dan twintig jaar vast en geeft u toch lang zekerheid.' },
+      { title:'Annuïtair aflossen', wijs:'tabel, kolom Looptijd',
+        keys:['Beide delen annuïtair tot 1 oktober 2056','Past bij wens: in 30 jaar afgelost, zo laag mogelijke maandlast','Elke maand zelfde bruto bedrag, begin lager dan lineair','Nieuwe lening minimaal annuïtair, anders geen renteaftrek'],
+        text:'Beide delen lost u annuïtair af tot 1 oktober 2056. Dat past bij uw wens: de hele hypotheek in 30 jaar afgelost, met een zo laag mogelijke maandlast. Bij annuïtair betaalt u elke maand hetzelfde bruto bedrag, en in het begin is dat lager dan bij lineair. Een nieuwe lening moet ook minimaal annuïtair worden afgelost, anders is de rente niet aftrekbaar.',
+        note:'Slide zegt hier nog “annuïtair tot 01-01-2041” bij leningdeel 1.' },
+      { title:'Aandachtspunt: aftrek stopt in 2040', wijs:'tabel, rij 1 (2041)',
+        keys:['Leningdeel 1 is een lening uit 2011','Rente max 30 jaar aftrekbaar: stopt eind 2040','Advies: vóór 2041 elk jaar ongeveer 4.900 euro extra aflossen','Zonder boete, slecht jaar mag u overslaan'],
+        text:'Er is wel één aandachtspunt. Leningdeel 1 is uw lening uit 2011, en hypotheekrente is maximaal 30 jaar aftrekbaar. Voor dit deel stopt de aftrek dus eind 2040. Daarom adviseren we u om vóór 2041 elk jaar ongeveer 4.900 euro extra af te lossen op leningdeel 1. Dat mag zonder boete. Heeft u een slecht jaar, dan slaat u het gewoon over.' },
+      { title:'Maandlast', wijs:'rechtsboven, bruto en netto',
+        keys:['Bruto 1.521 euro per maand','Netto ongeveer 1.241 euro na belastingvoordeel','Ongeveer 12% van netto gezinsinkomen'],
+        text:'Wat betaalt u per maand? Bruto 1.521 euro. Na belastingvoordeel is dat netto ongeveer 1.241 euro per maand. Dat is ongeveer 12% van uw netto gezinsinkomen.',
+        note:'Slide zegt nog bruto € 1.930 en netto € 1.651.' },
+      { title:'Bijleenregeling', wijs:'tekst rechts, “Bijleenregeling”',
+        keys:['Dan de belasting','Bijleenregeling: overwaarde moet in het nieuwe huis','Gaat vanzelf: 1 december wordt het overbruggingskrediet afgelost met die overwaarde','Ruim onder fiscaal maximum 431.600 euro, dus rente aftrekbaar'],
+        text:'Dan de belasting. Door de bijleenregeling moet uw overwaarde in het nieuwe huis. Dat gaat bij u vanzelf: op 1 december wordt het overbruggingskrediet afgelost met precies die overwaarde. Uw hypotheek blijft daarna ook ruim onder het fiscale maximum van 431.600 euro, dus de rente is aftrekbaar.' },
+      { title:'Eenmalig aftrekbare kosten', wijs:'tekst rechts, “Eenmalig aftrekbaar”',
+        keys:['Eenmalig aftrekbaar: hypotheekakte, taxatie, ons advies','Samen 6.045 euro, levert 2.270 euro belastingvoordeel','Niet aftrekbaar: bankgarantie en makelaar'],
+        text:'De kosten om de lening te krijgen zijn eenmalig aftrekbaar: de hypotheekakte, de taxatie en ons advies. Samen is dat 6.045 euro, en dat levert u 2.270 euro belastingvoordeel op. De bankgarantie en de makelaar zijn niet aftrekbaar.' },
+      { title:'Eigenwoningforfait', wijs:'tekst rechts, “Eigenwoningforfait”',
+        keys:['Forfait telt bij uw inkomen op','0,35% van de WOZ-waarde = 2.625 euro per jaar','Over rente min forfait maximaal 37,56% terug'],
+        text:'Verder telt de Belastingdienst het eigenwoningforfait bij uw inkomen op: 0,35% van de WOZ-waarde, dus 2.625 euro per jaar. Over het verschil tussen de betaalde rente en het forfait krijgt u maximaal 37,56% terug.' },
+      { title:'Overbruggingskrediet', wijs:'tabel, rij 3',
+        keys:['Tot slot de overgang','1 oktober tot 1 december twee huizen, geld pas 1 december vrij','Overbruggingskrediet 384.500 euro','Kost ongeveer 3.200 euro rente'],
+        text:'Tot slot de overgang. Van 1 oktober tot 1 december heeft u twee huizen, maar het geld uit uw oude woning komt pas op 1 december vrij. Daarom adviseren we een overbruggingskrediet van 384.500 euro. Dat kost ongeveer 3.200 euro rente.' },
+      { title:'Risico en plan B', wijs:'tabel, rij 3',
+        keys:['Verkoop niet definitief: bank leent misschien maar 90% van waarde oude huis','Voorwaarden koper verlopen vóór u de offerte tekent','Plan B: tijdelijke extra lening 52.500 euro, aflossen op 1 december'],
+        text:'Omdat de verkoop nog niet definitief is, leent de bank misschien maar 90% van de waarde van uw oude huis. De voorwaarden van uw koper moeten dus verlopen zijn voordat u de offerte tekent. Lukt dat niet, dan is ons plan B een tijdelijke extra lening van 52.500 euro, die u op 1 december weer aflost.' }
+    ],
+    cards:[
+      { b:0, q:'Wat kost de nieuwe woning met alle kosten erbij?', a:'823.590 euro' },
+      { b:0, q:'Hoeveel overdrachtsbelasting, en waarom geen startersvrijstelling?', a:'2% · ze zijn allebei ouder dan 35' },
+      { b:1, q:'Hoeveel overwaarde houden ze over, en hoe heet dat fiscaal?', a:'384.500 euro · eigenwoningreserve' },
+      { b:1, q:'Hoeveel spaargeld brengen ze in, en hoeveel zou kunnen?', a:'100.000 euro in · 125.000 euro zou kunnen' },
+      { b:1, q:'Waarom bewust 100.000 en niet 125.000?', a:'Zo houden ze een buffer van 50.000 euro, nodig als Thomas gaat ondernemen' },
+      { b:1, q:'Hoe hoog is de hypotheek?', a:'339.090 euro, in twee leningdelen' },
+      { b:2, q:'Leningdeel 1: bedrag, rente en tot wanneer vast?', a:'135.000 euro · 2% · vast tot 2041 · meegenomen van de huidige hypotheek' },
+      { b:2, q:'Wat kost een nieuwe lening nu, en wat bespaart meenemen?', a:'Ongeveer 4,4% · in het begin ongeveer 3.240 euro rente per jaar' },
+      { b:3, q:'Leningdeel 2: bedrag, rente, rentevaste periode?', a:'204.090 euro · ongeveer 4,4% · 10 jaar vast' },
+      { b:3, q:'Waarom 10 jaar vast en niet 20?', a:'10 jaar is nu goedkoper dan 20 jaar en geeft toch lang zekerheid' },
+      { b:4, q:'Hoe en tot wanneer lossen ze af?', a:'Beide delen annuïtair, tot 1 oktober 2056 (30 jaar)' },
+      { b:4, q:'Waarom past annuïtair bij deze klant?', a:'Wens: in 30 jaar afgelost met zo laag mogelijke maandlast · elke maand hetzelfde bruto bedrag · in het begin lager dan lineair' },
+      { b:4, q:'Waarom moet een nieuwe lening minimaal annuïtair?', a:'Anders is de rente niet aftrekbaar' },
+      { b:5, q:'Wat is het aandachtspunt bij leningdeel 1?', a:'Lening uit 2011 · rente max 30 jaar aftrekbaar · aftrek stopt eind 2040' },
+      { b:5, q:'Wat adviseer je voor leningdeel 1?', a:'Vóór 2041 elk jaar ongeveer 4.900 euro extra aflossen · zonder boete · slecht jaar overslaan mag' },
+      { b:6, q:'Maandlast bruto en netto?', a:'Bruto 1.521 euro · netto ongeveer 1.241 euro' },
+      { b:6, q:'Welk deel van het netto gezinsinkomen is dat?', a:'Ongeveer 12%' },
+      { b:7, q:'Wat zegt de bijleenregeling, en hoe gaat dat bij hen?', a:'Overwaarde moet in het nieuwe huis · gaat vanzelf: op 1 december wordt het overbruggingskrediet afgelost met die overwaarde' },
+      { b:7, q:'Hoe hoog is het fiscale maximum?', a:'431.600 euro · de hypotheek blijft er ruim onder, dus rente aftrekbaar' },
+      { b:8, q:'Welke kosten zijn eenmalig aftrekbaar, en hoeveel samen?', a:'Hypotheekakte, taxatie en advies · samen 6.045 euro' },
+      { b:8, q:'Hoeveel belastingvoordeel levert dat op?', a:'2.270 euro' },
+      { b:8, q:'Welke kosten zijn NIET aftrekbaar?', a:'Bankgarantie en makelaar' },
+      { b:9, q:'Eigenwoningforfait: percentage en bedrag?', a:'0,35% van de WOZ-waarde = 2.625 euro per jaar' },
+      { b:9, q:'Hoeveel krijgen ze maximaal terug, en waarover?', a:'Maximaal 37,56% over het verschil tussen betaalde rente en forfait' },
+      { b:10, q:'Overbruggingskrediet: periode, bedrag, kosten?', a:'1 oktober tot 1 december · 384.500 euro · ongeveer 3.200 euro rente' },
+      { b:11, q:'Welk risico is er bij het overbruggingskrediet?', a:'Verkoop nog niet definitief, dus bank leent misschien maar 90% van de waarde van het oude huis · voorwaarden koper moeten verlopen zijn vóór je de offerte tekent' },
+      { b:11, q:'Wat is plan B?', a:'Tijdelijke extra lening van 52.500 euro, aflossen op 1 december' }
+    ]
+  },
+  s5: {
+    id:'s5', nr:5, img:'slide5.jpg', target:150,
+    name:'Particuliere schadeverzekeringen',
+    blocks:[
+      { title:'Marktwaarde', wijs:'licht vak links, “€ 795.000”',
+        keys:['Dan uw verzekeringen, eerst een belangrijk verschil','Marktwaarde Boslaan 33: 795.000 euro','Wat het huis bij verkoop oplevert, incl. grond en ligging'],
+        text:'Dan uw verzekeringen. Eerst een belangrijk verschil. De marktwaarde van de Boslaan 33 is 795.000 euro. Dat is wat het huis oplevert als u het verkoopt, inclusief de grond en de ligging.' },
+      { title:'Herbouwwaarde', wijs:'donkerblauw vak links, “€ 495.000”',
+        keys:['Herbouwwaarde 495.000 euro','Wat opnieuw bouwen kost, bijvoorbeeld na brand','De grond brandt niet af, dus herbouwwaarde verzekeren'],
+        text:'De herbouwwaarde is 495.000 euro. Dat is wat het kost om het huis opnieuw te bouwen, bijvoorbeeld na een brand. De grond brandt niet af. Daarom verzekert u de herbouwwaarde.' },
+      { title:'Onderverzekering', wijs:'donkerblauw vak, “garantie tegen onderverzekering”',
+        keys:['Te weinig verzekerd = onderverzekerd','Voorbeeld: 80% verzekerd, 50.000 euro schade, u krijgt 40.000 euro','Advies: polis met garantie tegen onderverzekering','Die krijgt u via de herbouwwaardemeter van de verzekeraar'],
+        text:'Verzekert u te weinig, dan bent u onderverzekerd. Een voorbeeld: verzekert u maar 80% en is er 50.000 euro schade, dan krijgt u maar 40.000 euro. Daarom adviseren we een polis met garantie tegen onderverzekering. Die krijgt u als u de herbouwwaarde bepaalt met de herbouwwaardemeter van de verzekeraar.' },
+      { title:'Opstal, inboedel, aansprakelijkheid', wijs:'middelste kolom, bovenste drie',
+        keys:['In het midden: advies per verzekering','Opstal verplicht van de bank, ook schuurtje en zonnepanelen','Inboedel voor uw spullen','Aansprakelijkheid voor het hele gezin'],
+        text:'In het midden ziet u ons advies per verzekering. De opstalverzekering is verplicht van de bank, en daar horen ook uw schuurtje en de zonnepanelen bij. Daarnaast een inboedelverzekering voor uw spullen, en een aansprakelijkheidsverzekering voor uw hele gezin.',
+        note:'Schuurtje en zonnepanelen staan niet op de slide: dat moet je zelf onthouden.' },
+      { title:'Rechtsbijstand, glas, zzp', wijs:'middelste kolom, onderste drie',
+        keys:['Rechtsbijstand optioneel, alleen onderdeel wonen','Geen aparte glasverzekering: glas zit al in opstal','Thomas zzp’er: bedrijfsaansprakelijkheid erbij'],
+        text:'Rechtsbijstand is optioneel, en dan alleen het onderdeel wonen. Een aparte glasverzekering is niet nodig, want glas zit al in de opstalverzekering. En als Thomas zzp\'er wordt, komt er een bedrijfsaansprakelijkheidsverzekering bij.' },
+      { title:'Inboedelwaardemeter', wijs:'middelste kolom, “Inboedelverzekering”',
+        keys:['Inboedel: inboedelwaardemeter','Groter wonen, dus waarde spullen opnieuw bepalen','Ook hier garantie tegen onderverzekering'],
+        text:'Voor de inboedel adviseren we de inboedelwaardemeter. U gaat groter wonen, dus het is goed om de waarde van uw spullen opnieuw te bepalen. Dan geldt ook hier garantie tegen onderverzekering.' },
+      { title:'Hoger eigen risico', wijs:'staat niet op de slide',
+        keys:['Hoger eigen risico, 250 tot 500 euro','Nooit schade geclaimd en ruime buffer','Lagere premie, verzeker vooral wat u zelf niet kunt betalen'],
+        text:'Verder adviseren we een hoger eigen risico, bijvoorbeeld 250 tot 500 euro. U heeft nooit schade geclaimd en u heeft een ruime buffer. Een hoger eigen risico maakt de premie lager, en u verzekert vooral wat u zelf niet kunt betalen.',
+        note:'Dit blok staat niet op de slide: helemaal uit je hoofd.' },
+      { title:'Huis uit 1933', wijs:'vak rechts, “Let op: woning uit 1933”',
+        keys:['Rechts: aandachtspunten huis uit 1933','Fundering op houten palen, loden waterleidingen, oude elektra','Slijtage en eigen gebreken meestal niet verzekerd','Advies: bouwkundige keuring vóór 1 oktober'],
+        text:'Rechts staan de aandachtspunten voor een huis uit 1933. Denk aan de fundering op houten palen, loden waterleidingen en oude elektra. Slijtage en eigen gebreken zijn meestal niet verzekerd. Daarom adviseren we u een bouwkundige keuring vóór 1 oktober.' }
+    ],
+    cards:[
+      { b:0, q:'Marktwaarde van de Boslaan 33, en wat betekent het?', a:'795.000 euro · wat het huis bij verkoop oplevert, inclusief grond en ligging' },
+      { b:1, q:'Herbouwwaarde, en wat betekent het?', a:'495.000 euro · wat het kost om het huis opnieuw te bouwen, bijvoorbeeld na brand' },
+      { b:1, q:'Waarom verzeker je de herbouwwaarde en niet de marktwaarde?', a:'De grond brandt niet af' },
+      { b:2, q:'Geef het voorbeeld van onderverzekering.', a:'80% verzekerd, 50.000 euro schade, dan krijgt u maar 40.000 euro' },
+      { b:2, q:'Hoe krijg je garantie tegen onderverzekering op de opstal?', a:'Herbouwwaarde bepalen met de herbouwwaardemeter van de verzekeraar' },
+      { b:3, q:'Opstalverzekering: waarom, en wat valt er ook onder?', a:'Verplicht van de bank · ook het schuurtje en de zonnepanelen' },
+      { b:3, q:'Inboedel en aansprakelijkheid: voor wat en voor wie?', a:'Inboedel: uw spullen · aansprakelijkheid: het hele gezin' },
+      { b:4, q:'Wat is het advies over rechtsbijstand?', a:'Optioneel, en dan alleen het onderdeel wonen' },
+      { b:4, q:'Waarom geen aparte glasverzekering?', a:'Glas zit al in de opstalverzekering' },
+      { b:4, q:'Wanneer komt er een bedrijfsaansprakelijkheidsverzekering bij?', a:'Als Thomas zzp’er wordt' },
+      { b:5, q:'Waarom de inboedelwaardemeter?', a:'Ze gaan groter wonen, dus waarde spullen opnieuw bepalen · dan ook garantie tegen onderverzekering' },
+      { b:6, q:'Advies eigen risico, en waarom?', a:'Hoger, 250 tot 500 euro · nooit geclaimd en ruime buffer · lagere premie · verzeker wat u zelf niet kunt betalen' },
+      { b:7, q:'Noem de drie aandachtspunten voor een huis uit 1933.', a:'Fundering op houten palen · loden waterleidingen · oude elektra' },
+      { b:7, q:'Wat is meestal niet verzekerd, en wat adviseer je?', a:'Slijtage en eigen gebreken · bouwkundige keuring vóór 1 oktober' }
+    ]
+  }
+};
+
+const LEVELS = [
+  { lab:'Hele tekst' },
+  { lab:'Zonder getallen' },
+  { lab:'Begin­letters' },
+  { lab:'Steek­woorden' },
+  { lab:'Alleen titels' }
+];
+
+/* ---------- Opslag (alleen gemak, mag mislukken) ---------- */
+const KEY = 'spreekcoach-v1';
+function load(){ try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch(e){ return {}; } }
+const saved = load();
+const state = {
+  slide: DATA[saved.slide] ? saved.slide : 's3',
+  mode: ['leren','getallen','volgorde','generale'].includes(saved.mode) ? saved.mode : 'leren',
+  level: Object.assign({ s3:0, s5:0 }, saved.level || {}),
+  warnHidden: !!saved.warnHidden,
+  easy: !!saved.easy,
+  best: saved.best || {},
+  last: saved.last || {}
+};
+function persist(){
+  try { localStorage.setItem(KEY, JSON.stringify({ slide:state.slide, mode:state.mode, level:state.level, warnHidden:state.warnHidden, easy:state.easy, best:state.best, last:state.last })); } catch(e){}
+}
+
+/* ---------- Hulpjes ---------- */
+const view = document.getElementById('view');
+const cur = () => DATA[state.slide];
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;' }[c]));
+const words = t => t.split(/\s+/).filter(Boolean).length;
+const fmt = ms => { const s = Math.max(0, Math.floor(ms / 1000)); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); };
+function shuffled(a){ const r = a.slice(); for (let i = r.length - 1; i > 0; i--){ const j = Math.floor(Math.random() * (i + 1)); [r[i], r[j]] = [r[j], r[i]]; } return r; }
+function estSecs(d, i){ const tot = d.blocks.reduce((s, b) => s + words(b.text), 0); return Math.round(d.target * words(d.blocks[i].text) / tot); }
+
+const TOK = /([Ll]eningdeel \d)|(\d[\d.,]*\d%?|\d%?)|([\p{L}\p{M}][\p{L}\p{M}'’-]*)|(\s+)|([\s\S])/gu;
+function tokens(t){
+  const out = [];
+  for (const m of t.matchAll(TOK)){
+    if (m[1]) out.push({ k:'w', v:m[1] });
+    else if (m[2]) out.push({ k:'n', v:m[2] });
+    else if (m[3]) out.push({ k:'w', v:m[3] });
+    else if (m[4]) out.push({ k:'s', v:' ' });
+    else out.push({ k:'p', v:m[5] });
+  }
+  return out;
+}
+const blankHTML = v => `<button type="button" class="blank" data-v="${esc(v)}" style="--len:${v.length}" aria-label="Verborgen getal, tik om te tonen"></button>`;
+const hl = t => tokens(t).map(x => x.k === 'n' ? `<b class="n">${esc(x.v)}</b>` : esc(x.v)).join('');
+const blanks = t => tokens(t).map(x => x.k === 'n' ? blankHTML(x.v) : esc(x.v)).join('');
+const firstLetters = t => tokens(t).map(x => {
+  if (x.k === 'n') return blankHTML(x.v);
+  if (x.k === 'w') return esc(/eningdeel \d$/.test(x.v) ? x.v[0] + x.v.slice(-1) : Array.from(x.v)[0]);
+  return esc(x.v);
+}).join('');
+
+/* ---------- Kop ---------- */
+function syncHeader(){
+  document.querySelectorAll('[data-act="slide"]').forEach(b => b.setAttribute('aria-selected', String(b.dataset.slide === state.slide)));
+  document.querySelectorAll('[data-act="mode"]').forEach(b => b.setAttribute('aria-selected', String(b.dataset.mode === state.mode)));
+}
+
+/* ---------- Leren ---------- */
+let revealed = new Set();
+
+function bodyFor(b, lv, rev){
+  if (rev || lv === 0) return `<p>${hl(b.text)}</p>`;
+  if (lv === 1) return `<p>${blanks(b.text)}</p>`;
+  if (lv === 2) return `<p class="fl">${firstLetters(b.text)}</p>`;
+  if (lv === 3) return `<ul class="keys">${b.keys.map(k => `<li>${hl(k)}</li>`).join('')}</ul>`;
+  return `<p class="quiet">Vertel dit blok hardop. Tik om te spieken.</p>`;
+}
+function blockHTML(d, i, lv){
+  const b = d.blocks[i], rev = revealed.has(i);
+  return `<li class="block${rev ? ' rev' : ''}" data-i="${i}">
+    <div class="bhead"><span class="num">${i + 1}</span><h3>${esc(b.title)}</h3><span class="secs">~${estSecs(d, i)} s</span>
+      ${lv > 0 ? `<button type="button" class="peek" data-act="peek" aria-pressed="${rev}">${rev ? 'Verberg' : 'Spiek'}</button>` : ''}</div>
+    <p class="point"><span>Slide</span>${esc(b.wijs)}</p>
+    ${b.note ? `<p class="slidenote">${esc(b.note)}</p>` : ''}
+    <div class="btext">${bodyFor(b, lv, rev)}</div>
+  </li>`;
+}
+function warnHTML(){
+  return `<aside class="warn" role="note">
+    <h2>Let op: slide 3 en je tekst zeggen iets anders</h2>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>Wat</th><th>Op de slide</th><th>In je tekst</th></tr></thead>
+      <tbody>
+        <tr><td>Maandlast bruto</td><td class="old">€ 1.930</td><td><b>€ 1.521</b></td></tr>
+        <tr><td>Maandlast netto</td><td class="old">€ 1.651</td><td><b>€ 1.241</b></td></tr>
+        <tr><td>Leningdeel 1 af tot</td><td class="old">01-01-2041</td><td><b>1 oktober 2056</b></td></tr>
+      </tbody>
+    </table></div>
+    <p>Nagerekend: de slide hoort bij een oudere versie, waarin leningdeel 1 al in 2041 is afgelost. Je tekst klopt bij 30 jaar voor beide delen. Pas de slide aan vóór morgen. “Alle hypotheekrente blijft aftrekbaar” klopt dan alleen als ze die 4.900 euro per jaar extra aflossen.</p>
+    <div><button type="button" class="btn small" data-act="hidewarn">Begrepen, verbergen</button></div>
+  </aside>`;
+}
+function viewLeren(){
+  const d = cur(), lv = state.level[d.id] || 0;
+  const totalW = d.blocks.reduce((s, b) => s + words(b.text), 0);
+  let h = `<p class="lede">Lees elk blok twee keer hardop. Gaat dat goed, zet de balk een stap verder. Loop je vast, tik dan op het blok.</p>`;
+  h += `<details class="plan"><summary>Plan voor vanavond en morgenochtend</summary><ol>
+      <li><b>Leren:</b> stap 1 tot en met 5, per blok hardop.</li>
+      <li><b>Getallen:</b> tot alle kaartjes op “Wist ik” staan.</li>
+      <li><b>Volgorde:</b> tot je het zonder fouten doet.</li>
+      <li><b>Generale:</b> 3 keer hardop met de klok, staand, alsof de klant er zit.</li>
+      <li><b>Morgenochtend:</b> 1 keer Generale en 1 ronde Getallen. Niet meer stampen.</li>
+    </ol></details>`;
+  if (d.id === 's3'){
+    h += state.warnHidden
+      ? `<p class="tip"><button type="button" class="linkbtn" data-act="showwarn">Toon de waarschuwing over slide 3 weer</button></p>`
+      : warnHTML();
+  }
+  h += `<details class="slidepic"><summary>Bekijk slide ${d.nr}</summary><img src="${d.img}" alt="Slide ${d.nr}: ${esc(d.name)}" loading="lazy"></details>`;
+  h += `<div class="levels"><div class="lab"><span>Hoeveel tekst zie je?</span><span>stap ${lv + 1} van 5</span></div><div class="row" role="group" aria-label="Hoeveel tekst">` +
+    LEVELS.map((L, i) => `<button type="button" data-act="level" data-lv="${i}" aria-pressed="${i === lv}"><b>${i + 1}</b>${L.lab}</button>`).join('') +
+    `</div></div>`;
+  h += `<ol class="blocks">${d.blocks.map((_, i) => blockHTML(d, i, lv)).join('')}</ol>`;
+  h += `<p class="total">${d.blocks.length} blokken · ${totalW} woorden · richttijd ${fmt(d.target * 1000)} (≈ ${Math.round(totalW / (d.target / 60))} woorden per minuut, rustig tempo)</p>`;
+  view.innerHTML = h;
+}
+function toggleBlock(li){
+  const d = cur(), lv = state.level[d.id] || 0, i = +li.dataset.i;
+  if (lv === 0) return;
+  revealed.has(i) ? revealed.delete(i) : revealed.add(i);
+  const tmp = document.createElement('div');
+  tmp.innerHTML = blockHTML(d, i, lv);
+  li.replaceWith(tmp.firstElementChild);
+}
+
+/* ---------- Getallen (kaartjes) ---------- */
+let deck = null;
+function newDeck(mix){
+  const d = cur(), idx = d.cards.map((_, i) => i);
+  deck = { slide:d.id, queue: mix ? shuffled(idx) : idx, known:0, total:idx.length, shown:false, misses:{} };
+}
+function viewGetallen(){
+  const d = cur();
+  if (!deck || deck.slide !== d.id) newDeck(false);
+  const pct = Math.round(100 * deck.known / deck.total);
+  let h = `<p class="lede">Lees de vraag, zeg het antwoord hardop, en draai dan pas om. Wat je nog niet weet, komt een paar kaartjes later terug.</p>
+    <div class="deckbar"><span class="count">${deck.known} / ${deck.total} gekend</span><span class="meter" aria-hidden="true"><i style="width:${pct}%"></i></span>
+    <button type="button" class="btn small" data-act="shuffle">Husselen</button></div>`;
+  if (!deck.queue.length){
+    const hard = Object.keys(deck.misses).sort((a, b) => deck.misses[b] - deck.misses[a]);
+    h += `<section class="done"><h2>Alle ${deck.total} gekend</h2>` +
+      (hard.length
+        ? `<p>Deze gingen eerst mis. Kijk ze nog even na:</p><ul>${hard.map(i => `<li><b>${esc(d.cards[i].q)}</b><br>${hl(d.cards[i].a)}</li>`).join('')}</ul>`
+        : `<p>Alles in één keer goed. Sterk.</p>`) +
+      `<div class="row-btns"><button type="button" class="btn primary" data-act="restart">Nog een ronde</button><button type="button" class="btn" data-act="shuffle">Ronde in andere volgorde</button></div></section>`;
+    view.innerHTML = h; return;
+  }
+  const c = d.cards[deck.queue[0]];
+  h += `<article class="card">
+      <p class="from">Blok ${c.b + 1} · ${esc(d.blocks[c.b].title)}</p>
+      <p class="q">${esc(c.q)}</p>
+      ${deck.shown
+        ? `<div class="a">${hl(c.a)}</div><div class="grade"><button type="button" class="btn bad" data-act="no">Nog niet</button><button type="button" class="btn good" data-act="yes">Wist ik</button></div>`
+        : `<button type="button" class="btn primary" data-act="reveal">Toon antwoord</button>`}
+    </article>
+    <p class="tip">Toetsenbord: spatie = omdraaien, J = wist ik, N = nog niet.</p>`;
+  view.innerHTML = h;
+}
+function grade(ok){
+  const i = deck.queue.shift();
+  if (ok) deck.known++;
+  else { deck.misses[i] = (deck.misses[i] || 0) + 1; deck.queue.splice(Math.min(3, deck.queue.length), 0, i); }
+  deck.shown = false;
+  render();
+}
+
+/* ---------- Volgorde ---------- */
+let order = null;
+function newOrder(){
+  const d = cur();
+  let pool = shuffled(d.blocks.map((_, i) => i));
+  if (pool.every((v, i) => v === i) && pool.length > 1) pool = pool.reverse();
+  order = { slide:d.id, pool, placed:[], errors:0 };
+}
+function viewVolgorde(){
+  const d = cur();
+  if (!order || order.slide !== d.id) newOrder();
+  const done = !order.pool.length;
+  let h = `<p class="lede">Tik de blokken aan in de volgorde waarin je ze vertelt. Zo zit de rode draad erin, en weet je altijd wat er na komt.</p>`;
+  if (order.placed.length) h += `<ol class="placed">${order.placed.map(i => `<li><span class="num">${i + 1}</span>${esc(d.blocks[i].title)}</li>`).join('')}</ol>`;
+  if (done){
+    h += `<section class="done"><h2>${order.errors === 0 ? 'Foutloos' : 'Klaar, met ' + order.errors + (order.errors === 1 ? ' fout' : ' fouten')}</h2>
+      <p>${order.errors === 0 ? 'De volgorde zit erin. Door naar Generale.' : 'Nog een keer, tot het foutloos gaat.'}</p>
+      <div class="row-btns"><button type="button" class="btn primary" data-act="reorder">Opnieuw</button>${order.errors === 0 ? '<button type="button" class="btn" data-act="mode" data-mode="generale">Naar Generale</button>' : ''}</div></section>`;
+  } else {
+    h += `<div class="status"><span>Wat komt er nu, blok ${order.placed.length + 1}?</span><span>Fouten: <b>${order.errors}</b></span></div>
+      <div class="pool">${order.pool.map(i => `<button type="button" data-act="pick" data-i="${i}">${esc(d.blocks[i].title)}</button>`).join('')}</div>
+      <p class="tip"><button type="button" class="linkbtn" data-act="reorder">Opnieuw husselen</button></p>`;
+  }
+  view.innerHTML = h;
+}
+function pick(i, el){
+  if (i === order.placed.length){
+    order.placed.push(i);
+    order.pool = order.pool.filter(x => x !== i);
+    render();
+  } else {
+    order.errors++;
+    const s = view.querySelector('.status b'); if (s) s.textContent = order.errors;
+    el.classList.remove('shake'); void el.offsetWidth; el.classList.add('shake');
+  }
+}
+
+/* ---------- Generale ---------- */
+let reh = null, tick = null, wake = null;
+async function keepAwake(on){
+  try {
+    if (on && navigator.wakeLock) wake = await navigator.wakeLock.request('screen');
+    else if (!on && wake){ await wake.release(); wake = null; }
+  } catch(e){ wake = null; }
+}
+function rehStart(){
+  const d = cur(), now = performance.now(), start = state.easy ? 1 : 0;
+  reh = { slide:d.id, phase:'run', i:0, t0:now, tb:now, times:[], hint:d.blocks.map(() => start), start };
+  clearInterval(tick); tick = setInterval(updateClock, 200);
+  keepAwake(true);
+  render();
+}
+function rehNext(){
+  const d = cur(), now = performance.now();
+  reh.times[reh.i] = now - reh.tb;
+  reh.tb = now;
+  if (reh.i >= d.blocks.length - 1){
+    reh.phase = 'done'; reh.total = now - reh.t0;
+    clearInterval(tick); keepAwake(false);
+    const best = state.best[d.id];
+    state.last[d.id] = reh.total;
+    if (!best || Math.abs(reh.total - d.target * 1000) < Math.abs(best - d.target * 1000)) state.best[d.id] = reh.total;
+    persist();
+  } else reh.i++;
+  render();
+}
+function rehHint(){ if (reh.hint[reh.i] < 2){ reh.hint[reh.i]++; render(); } }
+function rehStop(){ clearInterval(tick); keepAwake(false); reh = null; render(); }
+function updateClock(){
+  if (!reh || reh.phase !== 'run') return;
+  const d = cur(), now = performance.now(), el = now - reh.t0, over = el > d.target * 1000;
+  const t = document.getElementById('timer'), bar = document.getElementById('bar'), bt = document.getElementById('btimer');
+  if (t){ t.textContent = fmt(el); t.classList.toggle('over', over); }
+  if (bar){ bar.style.width = Math.min(100, 100 * el / (d.target * 1000)) + '%'; bar.classList.toggle('over', over); }
+  if (bt) bt.textContent = fmt(now - reh.tb);
+}
+function viewGenerale(){
+  const d = cur();
+  if (reh && reh.slide !== d.id) rehStop();
+  if (!reh){
+    const best = state.best[d.id], last = state.last[d.id];
+    view.innerHTML = `<section class="reh"><div class="panel">
+      <h2>Generale repetitie, slide ${d.nr}</h2>
+      <p>Sta op en praat hardop, alsof de klant voor je zit. Je ziet alleen de titel van elk blok. Tik op <b>Volgende blok</b> zodra je aan het volgende begint. Weet je het niet meer, vraag dan een hint.</p>
+      <div class="stats"><span>Doel<b>${fmt(d.target * 1000)}</b></span><span>Blokken<b>${d.blocks.length}</b></span><span>Vorige keer<b>${last ? fmt(last) : '–'}</b></span><span>Dichtst bij doel<b>${best ? fmt(best) : '–'}</b></span></div>
+      <label class="check" for="easy"><input type="checkbox" id="easy" ${state.easy ? 'checked' : ''}><span>Makkelijk: toon de steekwoorden meteen. Gebruik dit de eerste keer, daarna uitzetten.</span></label>
+      <div><button type="button" class="btn primary" data-act="start">Start de klok</button></div>
+    </div></section>`;
+    return;
+  }
+  if (reh.phase === 'run'){
+    const b = d.blocks[reh.i], hv = reh.hint[reh.i], last = reh.i === d.blocks.length - 1;
+    const hint = hv === 0 ? `<p class="quiet">Vertel dit blok uit je hoofd.</p>`
+      : hv === 1 ? `<ul class="keys">${b.keys.map(k => `<li>${hl(k)}</li>`).join('')}</ul>`
+      : `<p>${hl(b.text)}</p>`;
+    view.innerHTML = `<section class="reh"><div class="panel">
+      <div class="clock"><span id="timer" class="timer">${fmt(performance.now() - reh.t0)}</span><span class="goal">doel ${fmt(d.target * 1000)}</span></div>
+      <div class="track" aria-hidden="true"><i id="bar"></i></div>
+      <p class="step">Blok ${reh.i + 1} van ${d.blocks.length} · in dit blok <span id="btimer">0:00</span> · richttijd ~${estSecs(d, reh.i)} s</p>
+      <h2 class="cur">${esc(b.title)}</h2>
+      <p class="point"><span>Slide</span>${esc(b.wijs)}</p>
+      <div class="hintbox">${hint}</div>
+      <div class="controls">
+        <button type="button" class="btn" data-act="hint" ${hv >= 2 ? 'disabled' : ''}>${hv === 0 ? 'Hint' : hv === 1 ? 'Hele tekst' : 'Alles getoond'}</button>
+        <button type="button" class="btn primary" data-act="next">${last ? 'Klaar' : 'Volgende blok'}</button>
+      </div>
+      <div class="row-btns" style="justify-content:space-between;align-items:center"><button type="button" class="linkbtn" data-act="stop">Stoppen</button><p class="kbd">Toetsenbord: spatie = volgende, H = hint</p></div>
+    </div></section>`;
+    updateClock();
+    return;
+  }
+  // klaar
+  const tgt = d.target * 1000, ratio = reh.total / tgt;
+  const ok = ratio >= 0.8 && ratio <= 1.15;
+  const verdict = ok ? 'Mooi op tijd' : ratio < 0.8 ? 'Te snel' : 'Te lang';
+  const advice = ok ? 'Goed tempo. Let vooral op de blokken met een hint.'
+    : ratio < 0.8 ? 'Praat rustiger. Neem een korte pauze na elk getal, en kijk de klant aan.'
+    : 'Kijk welke blokken uitlopen (rood) en houd die korter.';
+  const hinted = d.blocks.map((_, i) => i).filter(i => reh.hint[i] > reh.start);
+  const rows = d.blocks.map((b, i) => {
+    const est = estSecs(d, i), sec = Math.round(reh.times[i] / 1000), slow = sec > est * 1.5 + 5;
+    const hv = reh.hint[i] > reh.start ? (reh.hint[i] === 2 ? 'hele tekst' : 'steekwoorden') : '';
+    return `<tr><td>${i + 1}</td><td>${esc(b.title)}</td><td class="t${slow ? ' slow' : ''}">${fmt(reh.times[i])}</td><td class="t">~${fmt(est * 1000)}</td><td class="hint">${hv}</td></tr>`;
+  }).join('');
+  view.innerHTML = `<section class="reh"><div class="panel">
+    <p class="step">Totale tijd, doel ${fmt(tgt)}</p>
+    <p class="big">${fmt(reh.total)}</p>
+    <p><span class="verdict ${ok ? 'good' : 'bad'}">${verdict}</span></p>
+    <p>${advice}</p>
+    ${hinted.length ? `<p>Hint nodig bij blok <b>${hinted.map(i => i + 1).join(', ')}</b>. Oefen die nog een keer in Leren.</p>` : `<p>Geen hints nodig. Dit zit erin.</p>`}
+    <div class="tbl-wrap"><table class="times"><thead><tr><th>#</th><th>Blok</th><th>Tijd</th><th>Richt</th><th>Hint</th></tr></thead><tbody>${rows}</tbody></table></div>
+    <div class="row-btns"><button type="button" class="btn primary" data-act="start">Nog een keer</button><button type="button" class="btn" data-act="mode" data-mode="leren">Naar Leren</button></div>
+  </div></section>`;
+}
+
+/* ---------- Besturing ---------- */
+function render(){
+  syncHeader();
+  ({ leren:viewLeren, getallen:viewGetallen, volgorde:viewVolgorde, generale:viewGenerale })[state.mode]();
+}
+function leaveRun(){ if (reh && reh.phase === 'run') rehStop(); }
+function setSlide(s){ if (s === state.slide) return; leaveRun(); reh = null; state.slide = s; revealed = new Set(); persist(); render(); window.scrollTo(0, 0); }
+function setMode(m){ if (m === state.mode) return; leaveRun(); state.mode = m; persist(); render(); window.scrollTo(0, 0); }
+
+document.addEventListener('click', e => {
+  const blank = e.target.closest('.blank');
+  if (blank){
+    const on = !blank.classList.contains('shown');
+    blank.classList.toggle('shown', on);
+    blank.textContent = on ? blank.dataset.v : '';
+    blank.setAttribute('aria-label', on ? blank.dataset.v : 'Verborgen getal, tik om te tonen');
+    return;
+  }
+  const a = e.target.closest('[data-act]');
+  if (a){
+    const act = a.dataset.act;
+    if (act === 'slide') setSlide(a.dataset.slide);
+    else if (act === 'mode') setMode(a.dataset.mode);
+    else if (act === 'level'){ state.level[state.slide] = +a.dataset.lv; revealed = new Set(); persist(); render(); }
+    else if (act === 'peek') toggleBlock(a.closest('.block'));
+    else if (act === 'hidewarn'){ state.warnHidden = true; persist(); render(); }
+    else if (act === 'showwarn'){ state.warnHidden = false; persist(); render(); }
+    else if (act === 'reveal'){ deck.shown = true; render(); }
+    else if (act === 'yes') grade(true);
+    else if (act === 'no') grade(false);
+    else if (act === 'shuffle'){ newDeck(true); render(); }
+    else if (act === 'restart'){ newDeck(false); render(); }
+    else if (act === 'pick') pick(+a.dataset.i, a);
+    else if (act === 'reorder'){ newOrder(); render(); }
+    else if (act === 'start') rehStart();
+    else if (act === 'next') rehNext();
+    else if (act === 'hint') rehHint();
+    else if (act === 'stop') rehStop();
+    return;
+  }
+  const li = e.target.closest('.block');
+  if (li && state.mode === 'leren' && !window.getSelection().toString()) toggleBlock(li);
+});
+
+document.addEventListener('change', e => {
+  if (e.target.id === 'easy'){ state.easy = e.target.checked; persist(); }
+});
+
+document.addEventListener('keydown', e => {
+  if (e.metaKey || e.ctrlKey || e.altKey) return;
+  if (e.target.closest && e.target.closest('input, textarea, select')) return;
+  const onButton = e.target.closest && e.target.closest('button');
+  const k = e.key;
+  if (state.mode === 'generale' && reh && reh.phase === 'run'){
+    if (k === 'ArrowRight' || (!onButton && (k === ' ' || k === 'Enter'))){ e.preventDefault(); rehNext(); }
+    else if (k === 'h' || k === 'H'){ rehHint(); }
+    else if (k === 'Escape'){ rehStop(); }
+  } else if (state.mode === 'getallen' && deck && deck.queue.length){
+    if (!deck.shown && !onButton && (k === ' ' || k === 'Enter')){ e.preventDefault(); deck.shown = true; render(); }
+    else if (deck.shown && (k === 'j' || k === 'J' || k === 'ArrowRight')) grade(true);
+    else if (deck.shown && (k === 'n' || k === 'N' || k === 'ArrowLeft')) grade(false);
+  }
+});
+
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible' && reh && reh.phase === 'run') keepAwake(true);
+});
+
+render();
+})();
+</script>
+</body></html>
